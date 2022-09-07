@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"github.com/devstream/ospp-go-grpc/internal/pb"
 	"log"
 )
 
@@ -29,19 +28,4 @@ func (l *defaultLogger) Log(prefix string, level LogLevel, v ...interface{}) {
 
 func (l *defaultLogger) Logf(prefix string, level LogLevel, format string, v ...interface{}) {
 	l.logger.Printf("%s [%s] %s", prefix, levelMap[level], fmt.Sprintf(format, v...))
-}
-
-func (l *defaultLogger) Named(name string) Logger {
-	// TODO implement me
-	panic("implement me")
-}
-
-func (i *impl) Log(s pb.Conn_LogServer) error {
-	// for {
-	//	recv, err := s.Recv()
-	//	if err != nil {
-	//		return err
-	//	}
-	// }
-	return nil
 }
