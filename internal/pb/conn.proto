@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "./;pb";
+
+message Empty {}
+
+service Conn {
+  rpc Log(stream LogInfo) returns (Empty){} // TODO 考虑中.另外开一条连接用于接收日志
+  rpc Communicate(stream CommunicateMsg) returns (stream CommunicateMsg){}
+}
+
+message BindRequest {
+  string Token = 1; // 绑定密钥
+  string Name = 2; // 插件名称
+  string Version = 3; // 插件版本号
+  repeated string Functions = 4; // 函数列表，用于校验是否实现core要求的interfaces
+}
+
+message UnbindRequest {
+  UnbindReason Reason = 1; // 解绑原因
+  string Token = 2; // 绑定密钥
+  string Name = 3; // 插件名称
+  string Version = 4; // 插件版本号
+  optional string Msg = 5; // 原因描述(可选)
+}
+
+enum UnbindReason{
+  Exit = 0; // 插件退出
+  UnUsed = 1; // 插件不再使用
+  Upgrade = 2; // 插件升级
+  Downgrade = 3; // 插件降级
+  Panic = 4; // 插件异常
+}
+
+message LogInfo {
+  LogLevel Type = 1;
+  string Message = 2; // 日志信息
+}
+
+message CommunicateMsg {
+  CommunicateType Type = 1;
+  bytes Data = 2; // 数据
+}
+
+enum CommunicateType{
+  Bind = 0; // 绑定
+  Unbind = 1; // 解绑
+  ExecRequest = 2; // core: 执行函数请求
+  ExecResponse = 3; // core: 执行函数响应
+  Ping = 4; // plugin: 健康检查消息
+  Log = 5; // plugin: 日志消息
+}
+
+// 消息类型为执行函数时，为以下特殊信息体
+message CommunicateExecRequest {
+  uint64 ID = 1; // 执行ID
+  string FuncName = 2; // 函数名
+  CodecType Type = 3; // 编码类型
+  bytes Args = 4; // 参数
+}
+
+message CommunicateExecResponse {
+  uint64 ID = 1; // 执行ID
+  CodecType Type = 2; // 编码类型
+  bytes Result = 3; // 返回值
+  optional string Err = 4; // 错误信息(可选)
+}
+
+enum CodecType{
+  Map = 0; // map类型
+  Bytes = 1; // bytes类型
+}
+
+enum LogLevel{
+  Debug = 0; // 调试
+  Info = 1; // 信息
+  Warn = 2; // 警告
+  Error = 3; // 错误
+}
+
+enum PluginStatus {
+  Connected = 0; // 已连接
+  Disconnected = 1; // 未连接
+}
+
+enum CoreStatus {
+  Launched = 0; // 已启动
+  Stopped = 1; // 已停止
+}
