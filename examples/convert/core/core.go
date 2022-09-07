@@ -35,7 +35,7 @@ func main() {
 		core.WithHealthTimeout(time.Second*15),
 	)
 	go func() {
-		if err := c.Serve(); err != nil {
+		if err := c.Serve(ctx); err != nil {
 			log.Fatal(err)
 		}
 	}()
@@ -58,6 +58,7 @@ func main() {
 	call(c, "EchoBytes2Map", []byte("hello"))
 	call(c, "EchoBytes2Bytes", []byte("hello"))
 
+	fmt.Println("waiting for interrupt/kill signal")
 	<-ctx.Done()
 }
 

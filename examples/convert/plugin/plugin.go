@@ -1,15 +1,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/devstream/ospp-go-grpc/plugin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
+	"os"
+	"os/signal"
 	"time"
 )
 
 func main() {
+	// kill signal means it's killed by the core with exec.Start()
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Kill)
+	defer cancel()
+
 	p := plugin.New("convert", "v1", "123",
 		plugin.WithLogLevel(plugin.LogLevelDebug),
 		plugin.WithHeartbeat(10*time.Second),
@@ -21,7 +28,7 @@ func main() {
 	p.Handle("EchoBytes2Bytes", EchoBytes2Bytes)
 	p.Handle("Panic", Panic)
 
-	if err := p.MountLocal(); err != nil {
+	if err := p.MountLocal(ctx); err != nil {
 		log.Println(err)
 		return
 	}

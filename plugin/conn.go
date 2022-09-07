@@ -22,18 +22,18 @@ func init() {
 // MountLocal is a helper to mount to local core, the plugin should be launched by exec
 //
 // port should be passed by 'port' flag
-func (p *Plugin) MountLocal() error {
-	return p.Mount("localhost", *_port)
+func (p *Plugin) MountLocal(ctx context.Context) error {
+	return p.Mount(ctx, "localhost", *_port)
 }
 
 // Mount mounts to core
-func (p *Plugin) Mount(host string, port int) error {
+func (p *Plugin) Mount(ctx context.Context, host string, port int) error {
 	// TODO(iyear): improvement
 	// defer func() {
 	//	_ = p.Shutdown(UnbindExit, nil)
 	// }()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	p.cancel = cancel
 
 	conn, err := grpc.DialContext(ctx, net.JoinHostPort(host, strconv.Itoa(port)), p.opts.dialOpts...)

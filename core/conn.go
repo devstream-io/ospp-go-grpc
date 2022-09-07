@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	mapset "github.com/deckarep/golang-set"
@@ -9,7 +10,7 @@ import (
 	"net"
 )
 
-func (c *Core) Serve() error {
+func (c *Core) Serve(ctx context.Context) error {
 	defer func() {
 		// if errors occur, close the server
 		if c.status == pb.CoreStatus_Launched {
@@ -18,7 +19,8 @@ func (c *Core) Serve() error {
 		c.Shutdown()
 	}()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", c.opts.port))
+	lc := net.ListenConfig{}
+	lis, err := lc.Listen(ctx, "tcp", fmt.Sprintf(":%d", c.opts.port))
 	if err != nil {
 		return err
 	}
@@ -30,13 +32,11 @@ func (c *Core) Serve() error {
 		return err
 	}
 	c.cron.Start()
+	defer c.cron.Stop()
 
 	c.status = pb.CoreStatus_Launched
 
-	if err = c.server.Serve(lis); err != nil {
-		return err
-	}
-	return nil
+	return c.server.Serve(lis)
 }
 
 func (c *Core) ShutdownPlugin(plugin, version string) error {
