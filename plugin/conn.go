@@ -2,13 +2,32 @@ package plugin
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"github.com/devstream/ospp-go-grpc/internal/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
+	"net"
+	"strconv"
 )
 
-func (p *Plugin) Mount(target string, port int) error {
+var _port = flag.Int("port", 0, "the port that core is listening on")
+
+func init() {
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+}
+
+// MountLocal is a helper to mount to local core, the plugin should be launched by exec
+//
+// port should be passed by 'port' flag
+func (p *Plugin) MountLocal() error {
+	return p.Mount("localhost", *_port)
+}
+
+// Mount mounts to core
+func (p *Plugin) Mount(host string, port int) error {
 	// TODO(iyear): improvement
 	// defer func() {
 	//	_ = p.Shutdown(UnbindExit, nil)
@@ -17,7 +36,7 @@ func (p *Plugin) Mount(target string, port int) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	p.cancel = cancel
 
-	conn, err := grpc.DialContext(ctx, fmt.Sprintf("%s:%d", target, port), p.opts.dialOpts...)
+	conn, err := grpc.DialContext(ctx, net.JoinHostPort(host, strconv.Itoa(port)), p.opts.dialOpts...)
 	if err != nil {
 		return err
 	}
