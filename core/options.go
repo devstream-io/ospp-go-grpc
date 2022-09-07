@@ -41,7 +41,7 @@ func defaultOpts() options {
 		port:          13000,
 		execReqChSize: 0,
 		interfaces:    nil, // default: no interfaces required
-		execTimeout:   time.Second * 10,
+		execTimeout:   time.Minute * 10,
 		logger: &defaultLogger{
 			logger: log.New(os.Stdout, "", log.LstdFlags),
 		},
@@ -85,7 +85,7 @@ func WithExecReqChSize(size int) Option {
 	})
 }
 
-// WithExecTimeout set the exec timeout, default is 10s
+// WithExecTimeout set the exec timeout, default is 10min
 func WithExecTimeout(dur time.Duration) Option {
 	return newOption(func(options *options) {
 		options.execTimeout = dur
