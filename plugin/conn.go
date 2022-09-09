@@ -13,16 +13,13 @@ import (
 
 var _port = flag.Int("port", 0, "the port that core is listening on")
 
-func init() {
-	if !flag.Parsed() {
-		flag.Parse()
-	}
-}
-
 // MountLocal is a helper to mount to local core, the plugin should be launched by exec
 //
 // port should be passed by 'port' flag
 func (p *Plugin) MountLocal(ctx context.Context) error {
+	if !flag.Parsed() {
+		flag.Parse()
+	}
 	return p.Mount(ctx, "localhost", *_port)
 }
 

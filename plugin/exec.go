@@ -58,7 +58,6 @@ func (p *Plugin) recoverExec(req *pb.CommunicateExecRequest) {
 		if err != nil {
 			p.Log.Errorf("communicate marshal exec response error: %v", err)
 			return
-
 		}
 
 		if err = p.clients.comm.Send(&pb.CommunicateMsg{
