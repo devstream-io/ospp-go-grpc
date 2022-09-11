@@ -19,6 +19,8 @@ func (c *Core) Serve(ctx context.Context) error {
 		c.Shutdown()
 	}()
 
+	ctx, c.cancel = context.WithCancel(ctx)
+
 	lc := net.ListenConfig{}
 	lis, err := lc.Listen(ctx, "tcp", fmt.Sprintf(":%d", c.opts.port))
 	if err != nil {
