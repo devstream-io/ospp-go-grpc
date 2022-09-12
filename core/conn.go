@@ -64,7 +64,7 @@ func (c *Core) Shutdown() {
 	c.cancel()
 	c.cron.Stop()
 
-	c.server.GracefulStop()
+	c.server.Stop()
 
 	c.status = pb.CoreStatus_Stopped
 }
