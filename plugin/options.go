@@ -3,6 +3,7 @@ package plugin
 import (
 	"github.com/devstream/ospp-go-grpc/internal/pb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"time"
 )
 
@@ -31,7 +32,7 @@ func newOption(f func(options *options)) *option { return &option{f: f} }
 
 func defaultOpts() options {
 	return options{
-		dialOpts:  make([]grpc.DialOption, 0),
+		dialOpts:  []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
 		callOpts:  make([]grpc.CallOption, 0),
 		heartbeat: time.Second * 10,
 		logLevel:  pb.LogLevel_Info,
@@ -53,6 +54,7 @@ func WithLogLevel(level LogLevel) Option {
 	})
 }
 
+// WithDialOpts default is grpc.WithTransportCredentials(insecure.NewCredentials())
 func WithDialOpts(opts ...grpc.DialOption) Option {
 	return newOption(func(options *options) {
 		options.dialOpts = opts
