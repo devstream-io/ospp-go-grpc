@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+type execResp struct {
+	*pb.CommunicateExecResponse
+}
+
 func (c *Core) recvExecResp(resp *pb.CommunicateExecResponse) {
 	exec, ok := c.execResp.Load(resp.ID)
 	if !ok {
