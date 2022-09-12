@@ -75,7 +75,7 @@ func (c *Core) bind(req *pb.BindRequest, comm pb.Conn_CommunicateServer) (*plugi
 		return nil, errors.New("invalid token")
 	}
 
-	// must impl only one of the interfaces
+	// if interfaces are set, check if the plugin implements only one of the interfaces
 	funcs := mapset.NewSet()
 	for _, f := range req.Functions {
 		funcs.Add(f)
@@ -96,7 +96,7 @@ func (c *Core) bind(req *pb.BindRequest, comm pb.Conn_CommunicateServer) (*plugi
 
 	key := util.GenKey(req.Name, req.Version)
 	if _, ok := c.plugins.Load(key); ok {
-		// 已存在插件断开连接
+		// plugin already exists, disconnect
 		return nil, fmt.Errorf("plugin %s.%s is exists", req.Name, req.Version)
 	}
 
@@ -117,10 +117,12 @@ func (c *Core) unbind(req *pb.UnbindRequest) error {
 	if c.token != req.Token {
 		return errors.New("invalid token")
 	}
+
 	key := util.GenKey(req.Name, req.Version)
 	if _, ok := c.plugins.Load(key); !ok {
 		return fmt.Errorf("plugin %s.%s is not exists", req.Name, req.Version)
 	}
+
 	c.plugins.Delete(key)
 	return nil
 }

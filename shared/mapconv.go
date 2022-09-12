@@ -22,6 +22,7 @@ func (c *MapConv) String() string {
 	return fmt.Sprintf("%v", c.m)
 }
 
+// Map return original map
 func (c *MapConv) Map() map[string]interface{} {
 	return c.m
 }
@@ -33,6 +34,7 @@ func (c *MapConv) Get(key string) (interface{}, bool) {
 	return v, ok
 }
 
+// MustGet return value of key, panic if not found
 func (c *MapConv) MustGet(key string) interface{} {
 	if value, exists := c.Get(key); exists {
 		return value

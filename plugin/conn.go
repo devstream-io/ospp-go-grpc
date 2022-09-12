@@ -25,10 +25,9 @@ func (p *Plugin) MountLocal(ctx context.Context) error {
 
 // Mount mounts to core
 func (p *Plugin) Mount(ctx context.Context, host string, port int) error {
-	// TODO(iyear): improvement
-	// defer func() {
-	//	_ = p.Shutdown(UnbindExit, nil)
-	// }()
+	defer func() {
+		_ = p.Shutdown(UnbindExit, nil)
+	}()
 
 	ctx, cancel := context.WithCancel(ctx)
 	p.cancel = cancel
@@ -86,7 +85,7 @@ func (p *Plugin) Mount(ctx context.Context, host string, port int) error {
 	return p.recv(ctx)
 }
 
-// unbind 填写参数msg将在Core打印解绑原因，如不需要传入nil
+// unbind fill in `msg` will print the reason for unmounting in core, if you do not need to pass nil
 func (p *Plugin) unbind(reason UnbindReason, msg *string) error {
 	b, err := proto.Marshal(&pb.UnbindRequest{
 		Reason:  pb.UnbindReason(reason),
@@ -102,10 +101,10 @@ func (p *Plugin) unbind(reason UnbindReason, msg *string) error {
 	return p.clients.comm.Send(&pb.CommunicateMsg{Type: pb.CommunicateType_Unbind, Data: b})
 }
 
+// Shutdown unmount and closes the connection
 func (p *Plugin) Shutdown(reason UnbindReason, msg *string) []error {
 	p.cron.Stop()
 
-	// 关闭连接
 	errs := make([]error, 0)
 
 	if err := p.unbind(reason, msg); err != nil {

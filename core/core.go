@@ -35,10 +35,13 @@ type pluginInfo struct {
 	comm pb.Conn_CommunicateServer
 }
 
+// Interface
+//
+// key is interface name
+// value is function names slice
 type Interface map[string][]string
 
 func New(token string, opts ...Option) *Core {
-	// TODO execTimeout 应当小于等于 serverOpts 的超时时间
 	c := Core{
 		token:    token,
 		plugins:  sync.Map{},

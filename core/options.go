@@ -98,6 +98,10 @@ func WithServerOpts(opts ...grpc.ServerOption) Option {
 	})
 }
 
+// WithInterfaces set the interfaces, default is nil
+//
+// if interfaces is nil, there is no limit for plugin to implement
+// if interfaces are not empty, every plugin must impl only one of the interfaces
 func WithInterfaces(interfaces ...Interface) Option {
 	return newOption(func(options *options) {
 		intfs := make(map[string]mapset.Set)

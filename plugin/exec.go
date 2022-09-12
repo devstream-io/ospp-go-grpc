@@ -43,11 +43,12 @@ func (p *Plugin) exec(data []byte) {
 	}
 }
 
+// recoverExec recovers from exec panic and sends the error to the core.
 func (p *Plugin) recoverExec(req *pb.CommunicateExecRequest) {
 	if r := recover(); r != nil {
 		p.Log.Errorf("exec func %s(%d) panic: %v", req.FuncName, req.ID, r)
 		p.opts.onPanic(p, req.ID, req.FuncName, fmt.Errorf("%v", r))
-		// TODO refactor
+
 		t := fmt.Errorf("panic: %v", r).Error()
 		msg, err := proto.Marshal(&pb.CommunicateExecResponse{
 			ID:     req.ID,
@@ -70,6 +71,7 @@ func (p *Plugin) recoverExec(req *pb.CommunicateExecRequest) {
 	}
 }
 
+// execFunc executes the function with the given request.
 func (p *Plugin) execFunc(req *pb.CommunicateExecRequest) (*pb.CommunicateExecResponse, error) {
 	f, ok := p.handlers.Load(req.FuncName)
 	if !ok {

@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// heartbeat send health check message to core
 func (p *Plugin) heartbeat() func() {
 	return func() {
 		buf := make([]byte, 4)

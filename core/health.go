@@ -16,6 +16,7 @@ func (c *Core) healthCheck() func() {
 			t := time.Now().Unix() - int64(c.opts.healthTimeout.Seconds())
 			c.opts.logger.Logf("core", LogLevelDebug, "checking health of plugin %s.%s: %d/%d", v.name, v.version, v.health, t)
 
+			// if health timeout, shutdown plugin
 			if v.health < t {
 				c.opts.logger.Logf("core", LogLevelInfo, "shutdown plugin %s.%s", v.name, v.version)
 				if err := c.ShutdownPlugin(v.name, v.version); err != nil {
