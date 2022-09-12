@@ -30,7 +30,6 @@ type Plugin struct {
 
 type clients struct {
 	conn pb.ConnClient
-	log  pb.Conn_LogClient
 	comm pb.Conn_CommunicateClient
 }
 

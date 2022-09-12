@@ -9,14 +9,14 @@ const (
 	LogLevelError LogLevel = 3
 )
 
-type UnbindReason int32
+type UnmountReason int32
 
 const (
-	UnbindExit      UnbindReason = 0
-	UnbindUnUsed    UnbindReason = 1
-	UnbindUpgrade   UnbindReason = 2
-	UnbindDowngrade UnbindReason = 3
-	UnbindPanic     UnbindReason = 4
+	UnmountExit      UnmountReason = 0
+	UnmountUnUsed    UnmountReason = 1
+	UnmountUpgrade   UnmountReason = 2
+	UnmountDowngrade UnmountReason = 3
+	UnmountPanic     UnmountReason = 4
 )
 
 type Status int32

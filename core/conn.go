@@ -69,7 +69,7 @@ func (c *Core) Shutdown() {
 	c.status = pb.CoreStatus_Stopped
 }
 
-func (c *Core) bind(req *pb.BindRequest, comm pb.Conn_CommunicateServer) (*pluginInfo, error) {
+func (c *Core) mount(req *pb.MountRequest, comm pb.Conn_CommunicateServer) (*pluginInfo, error) {
 	// invalid token, disconnect
 	if req.Token != c.token {
 		return nil, errors.New("invalid token")
@@ -113,7 +113,7 @@ func (c *Core) bind(req *pb.BindRequest, comm pb.Conn_CommunicateServer) (*plugi
 	return &info, nil
 }
 
-func (c *Core) unbind(req *pb.UnbindRequest) error {
+func (c *Core) unmount(req *pb.UnmountRequest) error {
 	if c.token != req.Token {
 		return errors.New("invalid token")
 	}

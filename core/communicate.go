@@ -21,35 +21,35 @@ func (i *impl) Communicate(comm pb.Conn_CommunicateServer) error {
 				return err
 			}
 			switch recv.Type {
-			case pb.CommunicateType_Bind:
+			case pb.CommunicateType_Mount:
 				if bound {
 					continue
 				}
-				req := pb.BindRequest{}
+				req := pb.MountRequest{}
 				if err = proto.Unmarshal(recv.Data, &req); err != nil {
 					return err
 				}
-				p, err := i.core.bind(&req, comm)
+				p, err := i.core.mount(&req, comm)
 				if err != nil {
 					return err
 				}
 
-				i.core.opts.logger.Logf("core", LogLevelInfo, "bind plugin [%s.%s],impl [%s] interface,funcs: %v", p.name, p.version, p.impl, p.funcs.String())
+				i.core.opts.logger.Logf("core", LogLevelInfo, "new plugin [%s.%s],impl [%s] interface,funcs: %v", p.name, p.version, p.impl, p.funcs.String())
 				bound = true
 				plugin = p
 				plugin.health = time.Now().Unix() // init health time
-			case pb.CommunicateType_Unbind:
+			case pb.CommunicateType_Unmount:
 				if !bound {
 					continue
 				}
-				req := pb.UnbindRequest{}
+				req := pb.UnmountRequest{}
 				// parse failed, disconnect
 				if err = proto.Unmarshal(recv.Data, &req); err != nil {
 					return err
 				}
-				// unbind failed, disconnect
-				i.core.opts.logger.Logf("core", LogLevelInfo, "unbind plugin %s.%s, %s:%v", req.Name, req.Version, pb.UnbindReason_name[int32(req.Reason)], req.Msg)
-				return i.core.unbind(&req)
+				// unmount failed, disconnect
+				i.core.opts.logger.Logf("core", LogLevelInfo, "unmount plugin %s.%s, %s:%v", req.Name, req.Version, pb.UnmountReason_name[int32(req.Reason)], req.Msg)
+				return i.core.unmount(&req)
 			case pb.CommunicateType_ExecResponse:
 				if !bound {
 					continue
