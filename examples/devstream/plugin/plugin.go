@@ -16,7 +16,7 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Kill)
 	defer cancel()
 
-	p := plugin.New("my-plugin-name", "v1", "123",
+	p := plugin.New("my-plugin-name", "v1", "devstream",
 		plugin.WithLogLevel(plugin.LogLevelInfo),
 		plugin.WithDialOpts(grpc.WithTransportCredentials(insecure.NewCredentials())))
 
