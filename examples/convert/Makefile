@@ -6,3 +6,7 @@ run:
 	chmod +x ./plugin/plugin
 	cd core && ./core
 
+.PHONY: delete
+delete:
+	rm -f ./core/core && rm -f ./plugin/plugin
+
