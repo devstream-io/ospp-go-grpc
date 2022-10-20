@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "./;pb";
+
+message Empty {}
+
+service Conn {
+  rpc Communicate(stream CommunicateMsg) returns (stream CommunicateMsg){}
+}
+
+message MountRequest {
+  string Token = 1; // mount token
+  string Name = 2; // plugin name
+  string Version = 3; // plugin version
+  repeated string Functions = 4; // functions list
+}
+
+message UnmountRequest {
+  UnmountReason Reason = 1; // unmount reason
+  string Token = 2; // mount token
+  string Name = 3; // plugin name
+  string Version = 4; // plugin version
+  optional string Msg = 5; // unmount message
+}
+
+enum UnmountReason{
+  Exit = 0; // plugin exit
+  NotUsed = 1; // plugin not used
+  Upgrade = 2; // plugin upgrade
+  Downgrade = 3; // plugin downgrade
+  Panic = 4; // plugin panic
+}
+
+message LogInfo {
+  LogLevel Type = 1;
+  string Message = 2; // log message
+}
+
+message CommunicateMsg {
+  CommunicateType Type = 1;
+  bytes Data = 2; // communicate payload
+}
+
+enum CommunicateType{
+  Mount = 0; // mount
+  Unmount = 1; // unmount
+  ExecRequest = 2; // core: exec request
+  ExecResponse = 3; // core: exec response
+  Ping = 4; // plugin: keep alive
+  Log = 5; // plugin: log
+}
+
+// if type is ExecRequest
+message CommunicateExecRequest {
+  uint64 ID = 1; // exec id
+  string FuncName = 2; // func name
+  CodecType Type = 3; // codec type
+  bytes Args = 4; // func args
+}
+
+message CommunicateExecResponse {
+  uint64 ID = 1; // exec id
+  CodecType Type = 2; // codec type
+  bytes Result = 3; // func result
+  optional string Err = 4; // error
+}
+
+enum CodecType{
+  Map = 0;
+  Bytes = 1;
+}
+
+enum LogLevel{
+  Debug = 0;
+  Info = 1;
+  Warn = 2;
+  Error = 3;
+}
+
+enum PluginStatus {
+  Connected = 0;
+  Disconnected = 1;
+}
+
+enum CoreStatus {
+  Launched = 0;
+  Stopped = 1;
+}
